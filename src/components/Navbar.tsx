@@ -2,37 +2,21 @@ import { useState } from "react";
 import { User, Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import LanguageSelector from "./LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const navTabs = [
   { id: "for-you", label: "For You", path: "/" },
   { id: "news", label: "News", path: "/news" },
   { id: "viral", label: "Viral", path: "/viral" },
-  { id: "videos", label: "Videos", path: "/videos" },
+  { id: "reddit", label: "Reddit", path: "/reddit" },
+  { id: "twitter", label: "Twitter (X)", path: "/twitter" },
 ];
 
 const Navbar = () => {
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const { selectedLanguage, setSelectedLanguage, languageLabels } = useLanguage();
   const location = useLocation();
-
-  const languageLabels: Record<string, string> = {
-    hi: "हिंदी",
-    te: "తెలుగు",
-    ta: "தமிழ்",
-    ml: "മലയാളം",
-    kn: "ಕನ್ನಡ",
-    en: "English",
-    mr: "मराठी",
-    bn: "বাংলা",
-    gu: "ગુજરાતી",
-    pa: "ਪੰਜਾਬੀ",
-    or: "ଓଡ଼ିଆ",
-    ur: "اردو",
-    bh: "भोजपुरी",
-    ne: "नेपाली",
-    as: "অসমীয়া",
-  };
 
   return (
     <>
