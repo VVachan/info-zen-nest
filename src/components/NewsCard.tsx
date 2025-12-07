@@ -1,4 +1,4 @@
-import { Clock } from "lucide-react";
+import { Clock, ExternalLink } from "lucide-react";
 
 interface NewsCardProps {
   title: string;
@@ -7,11 +7,22 @@ interface NewsCardProps {
   timeAgo: string;
   excerpt?: string;
   isLarge?: boolean;
+  url?: string;
 }
 
-const NewsCard = ({ title, source, imageUrl, timeAgo, excerpt, isLarge = false }: NewsCardProps) => {
+const NewsCard = ({ title, source, imageUrl, timeAgo, excerpt, isLarge = false, url }: NewsCardProps) => {
+  const CardWrapper = url ? "a" : "div";
+  const wrapperProps = url ? { 
+    href: url, 
+    target: "_blank", 
+    rel: "noopener noreferrer" 
+  } : {};
+
   return (
-    <article className={`news-card group ${isLarge ? "col-span-full md:col-span-2" : ""}`}>
+    <CardWrapper
+      {...wrapperProps}
+      className={`news-card group cursor-pointer block ${isLarge ? "col-span-full md:col-span-2" : ""}`}
+    >
       {/* Image */}
       <div className={`relative overflow-hidden ${isLarge ? "aspect-[21/9]" : "aspect-video"}`}>
         <img
@@ -25,6 +36,14 @@ const NewsCard = ({ title, source, imageUrl, timeAgo, excerpt, isLarge = false }
             {source}
           </span>
         </div>
+        {/* External Link Icon */}
+        {url && (
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="p-1.5 bg-card/90 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <ExternalLink size={12} className="text-card-foreground" />
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -46,7 +65,7 @@ const NewsCard = ({ title, source, imageUrl, timeAgo, excerpt, isLarge = false }
           <span>{timeAgo}</span>
         </div>
       </div>
-    </article>
+    </CardWrapper>
   );
 };
 
