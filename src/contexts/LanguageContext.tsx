@@ -1,11 +1,11 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 
 interface LanguageContextType {
   selectedLanguage: string;
   setSelectedLanguage: (code: string) => void;
   languageLabels: Record<string, string>;
   isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  languageVersion: number;
 }
 
 const languageLabels: Record<string, string> = {
@@ -31,28 +31,42 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const LANGUAGE_STORAGE_KEY = "newshunt_language";
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState(() => {
-    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return saved || "en";
+  const [selectedLanguage, setSelectedLanguageState] = useState(() => {
+    try {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      return saved || "en";
+    } catch {
+      return "en";
+    }
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [languageVersion, setLanguageVersion] = useState(0);
 
-  const handleSetLanguage = (code: string) => {
+  const setSelectedLanguage = useCallback((code: string) => {
+    if (code === selectedLanguage) return;
+    
     setIsLoading(true);
-    setSelectedLanguage(code);
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+    setSelectedLanguageState(code);
+    setLanguageVersion(v => v + 1);
+    
+    try {
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+    } catch (e) {
+      console.warn("Could not save language preference");
+    }
+    
     // Simulate loading for content refresh
     setTimeout(() => setIsLoading(false), 800);
-  };
+  }, [selectedLanguage]);
 
   return (
     <LanguageContext.Provider
       value={{
         selectedLanguage,
-        setSelectedLanguage: handleSetLanguage,
+        setSelectedLanguage,
         languageLabels,
         isLoading,
-        setIsLoading,
+        languageVersion,
       }}
     >
       {children}

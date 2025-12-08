@@ -52,13 +52,13 @@ const newsItems = [
 
 const News = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { selectedLanguage, languageLabels, isLoading: langLoading } = useLanguage();
+  const { selectedLanguage, languageLabels, isLoading: langLoading, languageVersion } = useLanguage();
 
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
-  }, [selectedLanguage]);
+  }, [languageVersion]);
 
   const loading = isLoading || langLoading;
 
