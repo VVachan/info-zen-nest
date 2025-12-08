@@ -6,16 +6,10 @@ const filters = [
   { id: "breaking", label: "Breaking News" },
   { id: "sports", label: "Sports" },
   { id: "fitness", label: "Fitness & Health" },
-  { id: "entertainment", label: "Films & Entertainment" },
-  { id: "music", label: "Music & Songs" },
+  { id: "films", label: "Films" },
+  { id: "music", label: "Music" },
   { id: "technology", label: "Technology" },
   { id: "education", label: "Education" },
-  { id: "trading", label: "Trading & Stock Market" },
-  { id: "banking", label: "Banking & Finance" },
-  { id: "business", label: "Business" },
-  { id: "politics", label: "Politics" },
-  { id: "science", label: "Science" },
-  { id: "startups", label: "Startups" },
 ];
 
 interface FilterPillsProps {
