@@ -15,6 +15,10 @@ const filterLabels: Record<string, string> = {
   music: "Music",
   technology: "Technology",
   education: "Education",
+  trading: "Trading",
+  business: "Business",
+  politics: "Politics",
+  science: "Science",
 };
 
 // Sample news data with URLs for external redirection
@@ -132,6 +136,70 @@ const allNewsItems = [
     url: "https://www.educationworld.in/",
     category: "education",
   },
+  {
+    title: "Stock Market Hits All-Time High Amid Global Optimism",
+    source: "Moneycontrol",
+    imageUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop",
+    timeAgo: "1 hour ago",
+    url: "https://www.moneycontrol.com/",
+    category: "trading",
+  },
+  {
+    title: "Cryptocurrency Markets Rally: Bitcoin Crosses $70K",
+    source: "Economic Times",
+    imageUrl: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&h=400&fit=crop",
+    timeAgo: "2 hours ago",
+    url: "https://economictimes.indiatimes.com/",
+    category: "trading",
+  },
+  {
+    title: "Startup Ecosystem Thrives: Record Funding in Q4",
+    source: "Mint",
+    imageUrl: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
+    timeAgo: "3 hours ago",
+    url: "https://www.livemint.com/",
+    category: "business",
+  },
+  {
+    title: "Major Companies Report Strong Quarterly Earnings",
+    source: "Business Standard",
+    imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop",
+    timeAgo: "4 hours ago",
+    url: "https://www.business-standard.com/",
+    category: "business",
+  },
+  {
+    title: "Parliament Passes Historic Digital Privacy Bill",
+    source: "NDTV",
+    imageUrl: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=600&h=400&fit=crop",
+    timeAgo: "5 hours ago",
+    url: "https://www.ndtv.com/",
+    category: "politics",
+  },
+  {
+    title: "Election 2024: Key Candidates Announce Campaigns",
+    source: "The Hindu",
+    imageUrl: "https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=600&h=400&fit=crop",
+    timeAgo: "6 hours ago",
+    url: "https://www.thehindu.com/",
+    category: "politics",
+  },
+  {
+    title: "Scientists Discover New Species in Deep Ocean",
+    source: "Science Daily",
+    imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=400&fit=crop",
+    timeAgo: "7 hours ago",
+    url: "https://www.sciencedaily.com/",
+    category: "science",
+  },
+  {
+    title: "Space Telescope Captures Stunning Images of Distant Galaxy",
+    source: "NASA",
+    imageUrl: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&h=400&fit=crop",
+    timeAgo: "8 hours ago",
+    url: "https://www.nasa.gov/",
+    category: "science",
+  },
 ];
 
 // Additional news for load more
@@ -203,7 +271,7 @@ const moreNewsItems = [
 ];
 
 const Index = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilters, setActiveFilters] = useState<string[]>(["all"]);
   const [isLoading, setIsLoading] = useState(false);
   const [displayedNews, setDisplayedNews] = useState(allNewsItems);
   const [hasMore, setHasMore] = useState(true);
@@ -212,13 +280,36 @@ const Index = () => {
 
   const handleFilterChange = (filterId: string) => {
     setIsLoading(true);
-    setActiveFilter(filterId);
     setHasMore(true);
     
-    // Reset to initial news when filter changes
-    const filtered = filterId === "all" 
-      ? allNewsItems 
-      : allNewsItems.filter(item => item.category === filterId);
+    let newFilters: string[];
+    
+    if (filterId === "all") {
+      // If "All" is clicked, select only "All"
+      newFilters = ["all"];
+    } else {
+      // Remove "all" if it was selected
+      const withoutAll = activeFilters.filter(f => f !== "all");
+      
+      if (withoutAll.includes(filterId)) {
+        // If already selected, remove it
+        newFilters = withoutAll.filter(f => f !== filterId);
+        // If nothing left, default to "all"
+        if (newFilters.length === 0) {
+          newFilters = ["all"];
+        }
+      } else {
+        // Add the new filter
+        newFilters = [...withoutAll, filterId];
+      }
+    }
+    
+    setActiveFilters(newFilters);
+    
+    // Filter news based on selected filters
+    const filtered = newFilters.includes("all")
+      ? allNewsItems
+      : allNewsItems.filter(item => newFilters.includes(item.category));
     
     setTimeout(() => {
       setDisplayedNews(filtered);
@@ -231,9 +322,9 @@ const Index = () => {
     
     // Simulate loading more news
     setTimeout(() => {
-      const moreFiltered = activeFilter === "all"
+      const moreFiltered = activeFilters.includes("all")
         ? moreNewsItems
-        : moreNewsItems.filter(item => item.category === activeFilter);
+        : moreNewsItems.filter(item => activeFilters.includes(item.category));
       
       setDisplayedNews(prev => [...prev, ...moreFiltered]);
       setHasMore(false); // No more items after this
@@ -253,14 +344,19 @@ const Index = () => {
   // Reset news when language changes
   useEffect(() => {
     setIsLoading(true);
-    const filtered = activeFilter === "all" 
-      ? allNewsItems 
-      : allNewsItems.filter(item => item.category === activeFilter);
+    const filtered = activeFilters.includes("all")
+      ? allNewsItems
+      : allNewsItems.filter(item => activeFilters.includes(item.category));
     setDisplayedNews(filtered);
     setHasMore(true);
     const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
-  }, [languageVersion, activeFilter]);
+  }, [languageVersion]);
+
+  // Get selected filter labels for display
+  const selectedFilterLabels = activeFilters.includes("all")
+    ? null
+    : activeFilters.map(f => filterLabels[f]).join(", ");
 
   const loading = isLoading || langLoading;
 
@@ -279,16 +375,16 @@ const Index = () => {
           </div>
           <p className="text-muted-foreground">
             Showing content in {languageLabels[selectedLanguage]}
-            {activeFilter !== "all" && (
+            {selectedFilterLabels && (
               <span className="ml-2 text-primary font-medium">
-                • Filtered by {filterLabels[activeFilter]}
+                • Filtered by {selectedFilterLabels}
               </span>
             )}
           </p>
         </div>
 
         {/* Filter Pills */}
-        <FilterPills activeFilter={activeFilter} onFilterChange={handleFilterChange} />
+        <FilterPills activeFilters={activeFilters} onFilterChange={handleFilterChange} />
 
         {/* News Grid */}
         {loading ? (
