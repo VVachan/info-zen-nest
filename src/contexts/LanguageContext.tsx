@@ -28,14 +28,20 @@ const languageLabels: Record<string, string> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const LANGUAGE_STORAGE_KEY = "newshunt_language";
+
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [selectedLanguage, setSelectedLanguage] = useState(() => {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return saved || "en";
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSetLanguage = (code: string) => {
     setIsLoading(true);
     setSelectedLanguage(code);
-    // Simulate loading
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+    // Simulate loading for content refresh
     setTimeout(() => setIsLoading(false), 800);
   };
 
