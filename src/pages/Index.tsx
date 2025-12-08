@@ -208,7 +208,7 @@ const Index = () => {
   const [displayedNews, setDisplayedNews] = useState(allNewsItems);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const { selectedLanguage, languageLabels, isLoading: langLoading } = useLanguage();
+  const { selectedLanguage, languageLabels, isLoading: langLoading, languageVersion } = useLanguage();
 
   const handleFilterChange = (filterId: string) => {
     setIsLoading(true);
@@ -252,12 +252,15 @@ const Index = () => {
 
   // Reset news when language changes
   useEffect(() => {
+    setIsLoading(true);
     const filtered = activeFilter === "all" 
       ? allNewsItems 
       : allNewsItems.filter(item => item.category === activeFilter);
     setDisplayedNews(filtered);
     setHasMore(true);
-  }, [selectedLanguage, activeFilter]);
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [languageVersion, activeFilter]);
 
   const loading = isLoading || langLoading;
 
