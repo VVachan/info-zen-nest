@@ -10,14 +10,18 @@ const filters = [
   { id: "music", label: "Music" },
   { id: "technology", label: "Technology" },
   { id: "education", label: "Education" },
+  { id: "trading", label: "Trading" },
+  { id: "business", label: "Business" },
+  { id: "politics", label: "Politics" },
+  { id: "science", label: "Science" },
 ];
 
 interface FilterPillsProps {
-  activeFilter: string;
+  activeFilters: string[];
   onFilterChange: (filterId: string) => void;
 }
 
-const FilterPills = ({ activeFilter, onFilterChange }: FilterPillsProps) => {
+const FilterPills = ({ activeFilters, onFilterChange }: FilterPillsProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -49,7 +53,7 @@ const FilterPills = ({ activeFilter, onFilterChange }: FilterPillsProps) => {
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {filters.map((filter) => {
-          const isActive = activeFilter === filter.id;
+          const isActive = activeFilters.includes(filter.id);
           return (
             <button
               key={filter.id}
