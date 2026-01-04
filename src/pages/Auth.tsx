@@ -1,11 +1,71 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Auth = () => {
+  const navigate = useNavigate();
+  const { user, loading, signIn, signUp, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsSubmitting(true);
+
+    const { error } = await signIn(loginEmail, loginPassword);
+    setIsSubmitting(false);
+
+    if (error) {
+      setErrorMessage(error);
+      return;
+    }
+
+    setSuccessMessage("Logged in successfully");
+    navigate("/");
+  };
+
+  const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (signupPassword !== signupConfirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await signUp(signupEmail, signupPassword, fullName);
+    setIsSubmitting(false);
+
+    if (error) {
+      setErrorMessage(error);
+      return;
+    }
+
+    setSuccessMessage("Account created. Check your email to confirm.");
+    setActiveTab("login");
+  };
+
+  const handleSignOut = async () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    const { error } = await signOut();
+    if (error) setErrorMessage(error);
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -30,9 +90,7 @@ const Auth = () => {
             </svg>
           </div>
           
-          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">
-            Newshunt
-          </h1>
+          <h1 className="text-4xl font-serif font-bold text-foreground mb-4">Newshunt</h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
             Personalized News Aggregator Website
           </p>
@@ -69,7 +127,7 @@ const Auth = () => {
           {/* Auth Card */}
           <div className="auth-card">
             {/* Tab Toggle */}
-            <div className="flex bg-muted rounded-full p-1 mb-8">
+            <div className="flex bg-muted rounded-full p-1 mb-6">
               <button
                 onClick={() => setActiveTab("login")}
                 className={`tab-pill flex-1 ${
@@ -88,150 +146,201 @@ const Auth = () => {
               </button>
             </div>
 
-            {/* Login Form */}
-            {activeTab === "login" && (
-              <form className="space-y-5 animate-fade-in">
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      className="input-field pr-12"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground 
-                                hover:text-card-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded border-border text-primary 
-                                focus:ring-primary focus:ring-offset-0"
-                    />
-                    <span className="text-sm text-muted-foreground">Remember me</span>
-                  </label>
-                  <a href="#" className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </a>
-                </div>
-
-                <button type="submit" className="btn-primary">
-                  Login
-                </button>
-              </form>
+            {(errorMessage || successMessage) && (
+              <div
+                className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
+                  errorMessage
+                    ? "border-destructive/60 bg-destructive/10 text-destructive"
+                    : "border-emerald-500/50 bg-emerald-500/10 text-emerald-700"
+                }`}
+              >
+                {errorMessage || successMessage}
+              </div>
             )}
 
-            {/* Sign Up Form */}
-            {activeTab === "signup" && (
-              <form className="space-y-5 animate-fade-in">
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="input-field"
-                  />
+            {user ? (
+              <div className="space-y-4">
+                <p className="text-card-foreground">
+                  Logged in as <span className="font-semibold">{user.email}</span>
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={() => navigate("/")} className="btn-primary flex-1">
+                    Go to home
+                  </button>
+                  <button onClick={handleSignOut} className="btn-primary flex-1">
+                    Sign out
+                  </button>
                 </div>
+              </div>
+            ) : (
+              <>
+                {/* Login Form */}
+                {activeTab === "login" && (
+                  <form className="space-y-5 animate-fade-in" onSubmit={handleLogin}>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        className="input-field"
+                        required
+                        disabled={isSubmitting || loading}
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="input-field"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          placeholder="Enter your password"
+                          className="input-field pr-12"
+                          required
+                          disabled={isSubmitting || loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-card-foreground transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                      className="input-field pr-12"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground 
-                                hover:text-card-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                          disabled
+                        />
+                        <span className="text-sm text-muted-foreground">Remember me</span>
+                      </label>
+                      <a href="https://supabase.com/docs/guides/auth" className="text-sm text-primary hover:underline" target="_blank" rel="noreferrer">
+                        Forgot password?
+                      </a>
+                    </div>
+
+                    <button type="submit" className="btn-primary" disabled={isSubmitting || loading}>
+                      {isSubmitting ? "Working..." : "Login"}
                     </button>
-                  </div>
-                </div>
+                  </form>
+                )}
 
-                <div>
-                  <label className="block text-sm font-medium text-card-foreground mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                      className="input-field pr-12"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground 
-                                hover:text-card-foreground transition-colors"
-                    >
-                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {/* Sign Up Form */}
+                {activeTab === "signup" && (
+                  <form className="space-y-5 animate-fade-in" onSubmit={handleSignup}>
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Enter your full name"
+                        className="input-field"
+                        disabled={isSubmitting || loading}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={signupEmail}
+                        onChange={(e) => setSignupEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        className="input-field"
+                        required
+                        disabled={isSubmitting || loading}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          value={signupPassword}
+                          onChange={(e) => setSignupPassword(e.target.value)}
+                          placeholder="Create a password"
+                          className="input-field pr-12"
+                          required
+                          disabled={isSubmitting || loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-card-foreground transition-colors"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-card-foreground mb-2">
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={signupConfirmPassword}
+                          onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                          placeholder="Confirm your password"
+                          className="input-field pr-12"
+                          required
+                          disabled={isSubmitting || loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-card-foreground transition-colors"
+                        >
+                          {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 mt-0.5 rounded border-border text-primary focus:ring-primary focus:ring-offset-0"
+                        required
+                        disabled={isSubmitting || loading}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        I agree to the{" "}
+                        <a href="#" className="text-primary hover:underline">
+                          Terms & Conditions
+                        </a>{" "}
+                        and{" "}
+                        <a href="#" className="text-primary hover:underline">
+                          Privacy Policy
+                        </a>
+                      </span>
+                    </label>
+
+                    <button type="submit" className="btn-primary" disabled={isSubmitting || loading}>
+                      {isSubmitting ? "Working..." : "Create Account"}
                     </button>
-                  </div>
-                </div>
-
-                <label className="flex items-start gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 mt-0.5 rounded border-border text-primary 
-                              focus:ring-primary focus:ring-offset-0"
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    I agree to the{" "}
-                    <a href="#" className="text-primary hover:underline">
-                      Terms & Conditions
-                    </a>{" "}
-                    and{" "}
-                    <a href="#" className="text-primary hover:underline">
-                      Privacy Policy
-                    </a>
-                  </span>
-                </label>
-
-                <button type="submit" className="btn-primary">
-                  Create Account
-                </button>
-              </form>
+                  </form>
+                )}
+              </>
             )}
           </div>
 
