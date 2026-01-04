@@ -1,19 +1,21 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/lib/translations";
 
 const filters = [
-  { id: "all", label: "All" },
-  { id: "breaking", label: "Breaking News" },
-  { id: "sports", label: "Sports" },
-  { id: "fitness", label: "Fitness & Health" },
-  { id: "films", label: "Films" },
-  { id: "music", label: "Music" },
-  { id: "technology", label: "Technology" },
-  { id: "education", label: "Education" },
-  { id: "trading", label: "Trading" },
-  { id: "business", label: "Business" },
-  { id: "politics", label: "Politics" },
-  { id: "science", label: "Science" },
+  { id: "all", label: "all" },
+  { id: "breaking", label: "breaking" },
+  { id: "sports", label: "sports" },
+  { id: "fitness", label: "fitness" },
+  { id: "films", label: "films" },
+  { id: "music", label: "music" },
+  { id: "technology", label: "technology" },
+  { id: "education", label: "education" },
+  { id: "trading", label: "trading" },
+  { id: "business", label: "business" },
+  { id: "politics", label: "politics" },
+  { id: "science", label: "science" },
 ];
 
 interface FilterPillsProps {
@@ -23,6 +25,7 @@ interface FilterPillsProps {
 
 const FilterPills = ({ activeFilters, onFilterChange }: FilterPillsProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { selectedLanguage } = useLanguage();
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -54,6 +57,7 @@ const FilterPills = ({ activeFilters, onFilterChange }: FilterPillsProps) => {
       >
         {filters.map((filter) => {
           const isActive = activeFilters.includes(filter.id);
+          const translatedLabel = getTranslation(filter.label, selectedLanguage);
           return (
             <button
               key={filter.id}
@@ -66,7 +70,7 @@ const FilterPills = ({ activeFilters, onFilterChange }: FilterPillsProps) => {
                              : "bg-card border border-border text-foreground hover:border-primary/50"
                          }`}
             >
-              {filter.label}
+              {translatedLabel}
             </button>
           );
         })}

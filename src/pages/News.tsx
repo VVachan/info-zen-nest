@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import NewsCard from "@/components/NewsCard";
 import NewsCardSkeleton from "@/components/NewsCardSkeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/lib/translations";
 
 const newsItems = [
   {
@@ -67,10 +68,10 @@ const News = () => {
       <div className="container mx-auto px-4 py-6">
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-            News
+            {getTranslation("news", selectedLanguage)}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Showing news in {languageLabels[selectedLanguage]}
+            {getTranslation("showingNewsIn", selectedLanguage)} {languageLabels[selectedLanguage]}
           </p>
         </div>
 
@@ -94,7 +95,7 @@ const News = () => {
             <button className="px-8 py-3 border border-primary text-primary font-medium 
                              rounded-lg hover:bg-primary hover:text-primary-foreground 
                              transition-colors duration-200">
-              Load More News
+              {getTranslation("loadMore", selectedLanguage)}
             </button>
           </div>
         )}

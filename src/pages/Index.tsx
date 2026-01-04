@@ -5,6 +5,7 @@ import NewsCardSkeleton from "@/components/NewsCardSkeleton";
 import FilterPills from "@/components/FilterPills";
 import EmptyState from "@/components/EmptyState";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/lib/translations";
 
 const filterLabels: Record<string, string> = {
   all: "All",
@@ -356,7 +357,7 @@ const Index = () => {
   // Get selected filter labels for display
   const selectedFilterLabels = activeFilters.includes("all")
     ? null
-    : activeFilters.map(f => filterLabels[f]).join(", ");
+    : activeFilters.map(f => getTranslation(f, selectedLanguage)).join(", ");
 
   const loading = isLoading || langLoading;
 
@@ -367,17 +368,17 @@ const Index = () => {
         <div className="mb-4">
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-              For You
+              {getTranslation("home", selectedLanguage)}
             </h1>
             <div className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-              Recommended for you
+              {getTranslation("home", selectedLanguage)}
             </div>
           </div>
           <p className="text-muted-foreground">
-            Showing content in {languageLabels[selectedLanguage]}
+            {getTranslation("showingNewsIn", selectedLanguage)} {languageLabels[selectedLanguage]}
             {selectedFilterLabels && (
               <span className="ml-2 text-primary font-medium">
-                • Filtered by {selectedFilterLabels}
+                • {selectedFilterLabels}
               </span>
             )}
           </p>

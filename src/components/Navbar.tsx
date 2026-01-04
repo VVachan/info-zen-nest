@@ -3,11 +3,12 @@ import { User, Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getTranslation } from "@/lib/translations";
 
 const navTabs = [
-  { id: "for-you", label: "For You", path: "/" },
-  { id: "news", label: "News", path: "/news" },
-  { id: "viral", label: "Viral", path: "/viral" },
+  { id: "for-you", label: "home", path: "/" },
+  { id: "news", label: "news", path: "/news" },
+  { id: "viral", label: "viral", path: "/viral" },
   { id: "reddit", label: "Reddit", path: "/reddit" },
   { id: "twitter", label: "Twitter (X)", path: "/twitter" },
 ];
@@ -49,13 +50,16 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-1">
             {navTabs.map((tab) => {
               const isActive = location.pathname === tab.path;
+              const translatedLabel = tab.label === "Reddit" || tab.label === "Twitter (X)" 
+                ? tab.label 
+                : getTranslation(tab.label, selectedLanguage);
               return (
                 <Link
                   key={tab.id}
                   to={tab.path}
                   className={`nav-tab ${isActive ? "nav-tab-active" : ""}`}
                 >
-                  {tab.label}
+                  {translatedLabel}
                 </Link>
               );
             })}
@@ -113,6 +117,9 @@ const Navbar = () => {
             <div className="container mx-auto px-4 py-2">
               {navTabs.map((tab) => {
                 const isActive = location.pathname === tab.path;
+                const translatedLabel = tab.label === "Reddit" || tab.label === "Twitter (X)" 
+                  ? tab.label 
+                  : getTranslation(tab.label, selectedLanguage);
                 return (
                   <Link
                     key={tab.id}
@@ -122,7 +129,7 @@ const Navbar = () => {
                                border-b border-navbar-foreground/10 last:border-0
                                ${isActive ? "text-primary font-medium" : ""}`}
                   >
-                    {tab.label}
+                    {translatedLabel}
                   </Link>
                 );
               })}
