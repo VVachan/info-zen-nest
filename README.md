@@ -1,73 +1,154 @@
-# Welcome to your Lovable project
+# Newshunt - Personalized News Aggregator
 
-## Project info
+A multi-language news aggregator with authentication and database integration.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Live Demo
+- **Website:** https://info-zen-nest.vercel.app/
+- **GitHub:** https://github.com/VVachan/info-zen-nest
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Technologies Used
 
-**Use Lovable**
+### Frontend
+- **React 18** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Router v6** - Client-side routing
+- **React Query (TanStack)** - Data fetching and caching
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Backend & Database
+- **Supabase** - Authentication and PostgreSQL database
+- **PostgreSQL** - Relational database
 
-Changes made via Lovable will be committed automatically to this repo.
+### UI Components
+- **Radix UI** - Headless component library
+- **Shadcn/ui** - Pre-built React components
+- **Lucide React** - Icon library
+- **Sonner** - Toast notifications
 
-**Use your preferred IDE**
+### Utilities
+- **React Hook Form** - Form state management
+- **Zod** - Schema validation
+- **date-fns** - Date utilities
+- **next-themes** - Theme management (dark/light mode)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Development Tools
+- **ESLint** - Code linting
+- **TypeScript ESLint** - TypeScript linting
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Setup Instructions for Your Friend
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/VVachan/info-zen-nest.git
+cd info-zen-nest
 ```
 
-**Edit a file directly in GitHub**
+### Step 2: Install Dependencies
+```bash
+npm install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Step 3: Create Environment File
+Create a `.env.local` file in the project root and add:
+```
+VITE_SUPABASE_URL=https://jmyxajwmetunwfalokhw.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpteXhhandtZXR1bndmYWxva2h3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwODk1ODgsImV4cCI6MjA4MDY2NTU4OH0.g6M9SYmfKynpGd3x1baqGFndD7onFsKkQFvE_bLQgNM
+```
 
-**Use GitHub Codespaces**
+### Step 4: Run the Development Server
+```bash
+npm run dev
+```
+Open http://localhost:5173 in your browser.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Authentication Setup (Supabase)
 
-This project is built with:
+### What is Supabase?
+Supabase is a backend service that handles user authentication and database. Your project is already set up at:
+https://supabase.com/dashboard/project/jmyxajwmetunwfalokhw/auth/users
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### How Authentication Works:
 
-## How can I deploy this project?
+1. **Sign Up:** User creates account with email/password
+   - A confirmation email arrives at their registered email
+   - User clicks the email link to verify
+   - Account is now active
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+2. **Log In:** User signs in with registered email/password
+   - Session is created and stored
+   - User can now access `/account` page
 
-## Can I connect a custom domain to my Lovable project?
+3. **View Profile:** Go to `/account` to see:
+   - Logged-in user email
+   - User ID and session info
+   - Profile data (name, avatar)
+   - Edit and save profile information
 
-Yes, you can!
+### To Check Users in Supabase:
+1. Go to https://supabase.com/dashboard/project/jmyxajwmetunwfalokhw/auth/users
+2. Log in with your account
+3. See all registered users in "Authentication → Users"
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Features
+
+✅ **Multi-Language Support** - Hindi, Telugu, Tamil, Kannada, Marathi, Bengali, Gujarati, Punjabi, Odia, Urdu, Nepali, Assamese
+✅ **User Authentication** - Email/password signup and login via Supabase
+✅ **User Profiles** - Store and edit user name and avatar
+✅ **News Aggregator** - Browse news by categories (Breaking, Sports, Technology, Business, etc.)
+✅ **Responsive Design** - Works on desktop, tablet, mobile
+✅ **Dark/Light Theme** - Built-in theme switcher
+
+---
+
+## Project Structure
+
+```
+src/
+├── pages/          # Page components (News, Auth, Account, Index, etc.)
+├── components/     # Reusable UI components
+├── contexts/       # Auth and Language context
+├── lib/            # Utilities, Supabase queries, and translations
+├── App.tsx         # Main app component
+└── main.tsx        # Entry point
+```
+
+---
+
+## Deployment
+
+The project is deployed on **Vercel**: https://info-zen-nest.vercel.app/
+
+Any changes pushed to GitHub's `main` branch will automatically deploy to Vercel.
+
+---
+
+## Troubleshooting
+
+**Issue:** "Supabase URL or anon key is missing"
+- **Solution:** Check `.env.local` file exists with correct values
+
+**Issue:** Authentication not working
+- **Solution:** Go to https://supabase.com/dashboard/project/jmyxajwmetunwfalokhw/auth/users and check:
+  - Email confirmations are enabled/disabled as needed
+  - User status shows "Confirmed"
+
+**Issue:** Profile data not saving
+- **Solution:** Ensure the `profiles` table exists in Supabase database
+
+**Issue:** Translations not showing
+- **Solution:** Language selector is in the navbar. Click your language code to switch languages
+
+---
+
+## Need Help?
+
+Contact: [Your Email/Contact Info]
